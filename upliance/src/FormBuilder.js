@@ -70,7 +70,7 @@ function FieldEditor({ field, index, fields, onChange, onRemove, onMove }) {
           </div>
         </>
       )}
-      <div>
+      <div className="field-editor-buttons">
         <button type="button" onClick={() => onMove(index, -1)}>Up</button>
         <button type="button" onClick={() => onMove(index, 1)}>Down</button>
         <button type="button" onClick={() => onRemove(index)}>Delete</button>
@@ -125,7 +125,7 @@ export default function FormBuilder({ form, setForm, onSave, onPreview }) {
   };
 
   return (
-    <div>
+    <div className="form-builder">
       <h2>Create Form</h2>
       {fields.map((field, idx) => (
         <FieldEditor
