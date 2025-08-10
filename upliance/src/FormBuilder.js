@@ -124,6 +124,11 @@ export default function FormBuilder({ form, setForm, onSave, onPreview }) {
     onSave(newForm);
   };
 
+  const preview = () => {
+    setForm({ ...form, fields });
+    onPreview();
+  };
+
   return (
     <div className="form-builder">
       <h2>Create Form</h2>
@@ -141,7 +146,7 @@ export default function FormBuilder({ form, setForm, onSave, onPreview }) {
       <button type="button" onClick={addField}>Add Field</button>
       <div className="form-actions">
         <button type="button" onClick={save}>Save Form</button>
-        <button type="button" onClick={onPreview}>Preview</button>
+        <button type="button" onClick={preview}>Preview</button>
       </div>
     </div>
   );
