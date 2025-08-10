@@ -7,7 +7,7 @@ function FieldEditor({ field, index, fields, onChange, onRemove, onMove }) {
   };
 
   return (
-    <div style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
+    <div className="field-editor">
       <div>
         <label>Type: </label>
         <select name="type" value={field.type} onChange={handleChange}>
@@ -139,7 +139,7 @@ export default function FormBuilder({ form, setForm, onSave, onPreview }) {
         />
       ))}
       <button type="button" onClick={addField}>Add Field</button>
-      <div style={{ marginTop: '20px' }}>
+      <div className="form-actions">
         <button type="button" onClick={save}>Save Form</button>
         <button type="button" onClick={onPreview}>Preview</button>
       </div>
