@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders navigation buttons', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  expect(screen.getAllByRole('button', { name: /Create/i }).length).toBeGreaterThan(0);
+  expect(screen.getAllByRole('button', { name: /Preview/i }).length).toBeGreaterThan(0);
+  expect(screen.getByRole('button', { name: /My Forms/i })).toBeInTheDocument();
 });
+
