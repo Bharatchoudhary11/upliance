@@ -46,7 +46,7 @@ function App() {
 
   return (
     <div className="App">
-      <nav style={{ marginBottom: '20px' }}>
+      <nav className="nav-bar">
         <button onClick={() => setPage('create')}>Create</button>
         <button onClick={() => setPage('preview')}>Preview</button>
         <button onClick={() => setPage('myforms')}>My Forms</button>
