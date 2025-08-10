@@ -6,7 +6,7 @@ export default function MyForms({ forms, onSelect }) {
       <h2>My Forms</h2>
       <ul>
         {forms.map((f) => (
-          <li key={f.name} className="form-list-item">
+          <li key={f.created} className="form-list-item">
             <button type="button" onClick={() => onSelect(f)}>
               {f.name} - {new Date(f.created).toLocaleString()}
             </button>
