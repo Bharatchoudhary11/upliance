@@ -123,16 +123,16 @@ export default function PreviewForm({ form, onBack }) {
       <h2>Preview: {form.name}</h2>
       <form onSubmit={handleSubmit}>
         {form.fields.map(f => (
-          <div key={f.id} style={{ marginBottom: '10px' }}>
+          <div key={f.id} className="preview-field">
             <label>
               {f.label} {f.required && '*'}
               {renderField(f)}
             </label>
-            {errors[f.id] && <div style={{ color: 'red' }}>{errors[f.id]}</div>}
+            {errors[f.id] && <div className="error-text">{errors[f.id]}</div>}
           </div>
         ))}
         <button type="submit">Submit</button>
-        <button type="button" onClick={onBack} style={{ marginLeft: '10px' }}>Back</button>
+        <button type="button" onClick={onBack} className="back-button">Back</button>
       </form>
     </div>
   );

@@ -1,0 +1,25 @@
+.field-editor {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.form-actions {
+  margin-top: 20px;
+}
+
+.preview-field {
+  margin-bottom: 10px;
+}
+
+.error-text {
+  color: red;
+}
+
+.form-list-item {
+  margin-bottom: 5px;
+}
+
+.back-button {
+  margin-left: 10px;
+}
