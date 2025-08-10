@@ -1,6 +1,32 @@
 import React, { useState, useEffect } from 'react';
 
-function evaluateFormula(formula, values) {
+interface Field {
+  id: string;
+  type: string;
+  label: string;
+  required?: boolean;
+  defaultValue?: any;
+  options?: string;
+  minLength?: string;
+  maxLength?: string;
+  email?: boolean;
+  password?: boolean;
+  derived?: boolean;
+  parents?: string;
+  formula?: string;
+}
+
+interface Form {
+  name: string;
+  fields: Field[];
+}
+
+interface PreviewFormProps {
+  form: Form;
+  onBack: () => void;
+}
+
+function evaluateFormula(formula: string, values: Record<string, any>): any {
   try {
     // eslint-disable-next-line no-new-func
     const fn = new Function('values', `return ${formula}`);
@@ -10,21 +36,26 @@ function evaluateFormula(formula, values) {
   }
 }
 
-export default function PreviewForm({ form, onBack }) {
-  const [values, setValues] = useState({});
-  const [errors, setErrors] = useState({});
+export default function PreviewForm({ form, onBack }: PreviewFormProps) {
+  const [values, setValues] = useState<Record<string, any>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const initial = {};
+    const initial: Record<string, any> = {};
     form.fields.forEach(f => {
       initial[f.id] = f.defaultValue || '';
+    });
+    // compute derived fields on mount
+    form.fields.forEach(f => {
+      if (f.derived && f.formula) {
+        initial[f.id] = evaluateFormula(f.formula, initial);
+      }
     });
     setValues(initial);
   }, [form]);
 
-  const handleChange = (id, value) => {
-    const newValues = { ...values, [id]: value };
-    // handle derived fields
+  const handleChange = (id: string, value: any) => {
+    const newValues: Record<string, any> = { ...values, [id]: value };
     form.fields.forEach(f => {
       if (f.derived && f.formula) {
         newValues[f.id] = evaluateFormula(f.formula, newValues);
@@ -33,8 +64,8 @@ export default function PreviewForm({ form, onBack }) {
     setValues(newValues);
   };
 
-  const validate = () => {
-    const newErrors = {};
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
     form.fields.forEach(f => {
       const val = values[f.id];
       if (f.required && !val) newErrors[f.id] = 'Required';
@@ -47,18 +78,22 @@ export default function PreviewForm({ form, onBack }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
       alert('Form valid!');
     }
   };
 
-  const renderField = (field) => {
+  const renderField = (field: Field) => {
+    const isDerived = field.derived;
     const common = {
       id: field.id,
       value: values[field.id] || '',
-      onChange: (e) => handleChange(field.id, e.target.type === 'checkbox' ? e.target.checked : e.target.value),
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+        handleChange(field.id, e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value),
+      readOnly: isDerived && !['select', 'radio', 'checkbox'].includes(field.type),
+      disabled: isDerived && ['select', 'radio', 'checkbox'].includes(field.type),
     };
 
     switch (field.type) {
@@ -86,6 +121,7 @@ export default function PreviewForm({ form, onBack }) {
                   value={opt.trim()}
                   checked={values[field.id] === opt.trim()}
                   onChange={(e) => handleChange(field.id, e.target.value)}
+                  disabled={isDerived}
                 />
                 {opt.trim()}
               </label>
@@ -102,9 +138,10 @@ export default function PreviewForm({ form, onBack }) {
                   checked={(values[field.id] || {})[opt.trim()] || false}
                   onChange={(e) => {
                     const current = values[field.id] || {};
-                    current[opt.trim()] = e.target.checked;
+                    current[opt.trim()] = (e.target as HTMLInputElement).checked;
                     handleChange(field.id, { ...current });
                   }}
+                  disabled={isDerived}
                 />
                 {opt.trim()}
               </label>
