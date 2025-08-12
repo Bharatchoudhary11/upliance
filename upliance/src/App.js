@@ -12,6 +12,17 @@ function App() {
   useEffect(() => {
     const stored = localStorage.getItem('forms');
     if (stored) setForms(JSON.parse(stored));
+
+    const path = window.location.pathname.replace('/', '') || 'create';
+    setPage(path);
+
+    const onPop = () => {
+      const newPath = window.location.pathname.replace('/', '') || 'create';
+      setPage(newPath);
+    };
+
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
   }, []);
 
   const saveForm = (form) => {
@@ -20,9 +31,15 @@ function App() {
     localStorage.setItem('forms', JSON.stringify(updated));
   };
 
+  const navigate = (path) => {
+    window.history.pushState({}, '', path);
+    const newPage = path.replace('/', '') || 'create';
+    setPage(newPage);
+  };
+
   const selectForm = (form) => {
     setCurrentForm(form);
-    setPage('preview');
+    navigate('/preview');
   };
 
   let content = null;
@@ -33,13 +50,13 @@ function App() {
         setForm={setCurrentForm}
         onSave={(f) => {
           saveForm(f);
-          setPage('preview');
+          navigate('/preview');
         }}
-        onPreview={() => setPage('preview')}
+        onPreview={() => navigate('/preview')}
       />
     );
   } else if (page === 'preview') {
-    content = <PreviewForm form={currentForm} onBack={() => setPage('create')} />;
+    content = <PreviewForm form={currentForm} onBack={() => navigate('/create')} />;
   } else if (page === 'myforms') {
     content = <MyForms forms={forms} onSelect={selectForm} />;
   }
@@ -47,9 +64,9 @@ function App() {
   return (
     <div className="App">
       <nav className="nav-bar">
-        <button onClick={() => setPage('create')}>Create</button>
-        <button onClick={() => setPage('preview')}>Preview</button>
-        <button onClick={() => setPage('myforms')}>My Forms</button>
+        <button onClick={() => navigate('/create')}>Create</button>
+        <button onClick={() => navigate('/preview')}>Preview</button>
+        <button onClick={() => navigate('/myforms')}>My Forms</button>
       </nav>
       {content}
     </div>
