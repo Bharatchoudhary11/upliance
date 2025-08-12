@@ -1,6 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import PreviewForm from './PreviewForm';
 
+beforeAll(() => {
+  // prevent jsdom error for alert
+  window.alert = jest.fn();
+});
+
 describe('PreviewForm derived fields', () => {
   const form = {
     name: 'Calc',
@@ -26,5 +31,22 @@ describe('PreviewForm derived fields', () => {
     fireEvent.change(aInput, { target: { value: '4' } });
     expect(sumInput.value).toBe('7');
     expect(sumInput).toHaveAttribute('readOnly');
+  });
+});
+
+describe('PreviewForm validation', () => {
+  it('requires at least one checkbox when marked required', () => {
+    const form = {
+      name: 'Terms',
+      fields: [
+        { id: 'terms', type: 'checkbox', label: 'Terms', required: true, options: 'Yes,No' }
+      ]
+    };
+    render(<PreviewForm form={form} onBack={() => {}} />);
+    fireEvent.click(screen.getByText('Submit'));
+    expect(screen.getByText('Required')).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText('Yes'));
+    fireEvent.click(screen.getByText('Submit'));
+    expect(screen.queryByText('Required')).toBeNull();
   });
 });
