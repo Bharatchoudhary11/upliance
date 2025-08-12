@@ -66,13 +66,29 @@ export default function PreviewForm({ form, onBack }: PreviewFormProps) {
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
+
+    const isEmpty = (field: Field, val: any): boolean => {
+      if (field.type === 'checkbox') {
+        return !val || Object.values(val).every(v => !v);
+      }
+      return val === undefined || val === null || val === '';
+    };
+
+    const getLength = (field: Field, val: any): number => {
+      if (field.type === 'checkbox' && val) {
+        return Object.values(val).filter(Boolean).length;
+      }
+      return typeof val === 'string' ? val.length : 0;
+    };
+
     form.fields.forEach(f => {
       const val = values[f.id];
-      if (f.required && !val) newErrors[f.id] = 'Required';
-      if (f.minLength && val.length < parseInt(f.minLength)) newErrors[f.id] = `Min ${f.minLength}`;
-      if (f.maxLength && val.length > parseInt(f.maxLength)) newErrors[f.id] = `Max ${f.maxLength}`;
-      if (f.email && val && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) newErrors[f.id] = 'Invalid email';
-      if (f.password && val && (!/[0-9]/.test(val) || val.length < 8)) newErrors[f.id] = 'Weak password';
+      if (f.required && isEmpty(f, val)) newErrors[f.id] = 'Required';
+      const len = getLength(f, val);
+      if (f.minLength && len < parseInt(f.minLength)) newErrors[f.id] = `Min ${f.minLength}`;
+      if (f.maxLength && len > parseInt(f.maxLength)) newErrors[f.id] = `Max ${f.maxLength}`;
+      if (f.email && typeof val === 'string' && val && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) newErrors[f.id] = 'Invalid email';
+      if (f.password && typeof val === 'string' && val && (!/[0-9]/.test(val) || val.length < 8)) newErrors[f.id] = 'Weak password';
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
