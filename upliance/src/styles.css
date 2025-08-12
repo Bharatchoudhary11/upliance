@@ -55,6 +55,7 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
 input:focus,
